@@ -35,7 +35,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\victor.yaremenko24\Documents\GitHub\hackathon-fall-dogsarecute\venv"
+VIRTUAL_ENV="C:\Users\dennis.chen24\Documents\GitHub\classes-project-DennisChenq\hackathon-fall-dogsarecute\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
