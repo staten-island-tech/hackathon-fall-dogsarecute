@@ -32,6 +32,9 @@ def search_song():
         webbrowser.open(youtube_link)
     else:
         messagebox.showerror("Choice Error", "Please choose either 'Google' or 'YouTube'.")
+    
+    # Close the window after the search
+    root.quit()  # or root.destroy()
 
 # Create the main window
 root = tk.Tk()
