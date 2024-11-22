@@ -13,5 +13,5 @@ song_name = input("Enter the name of the song: ")
 google_link = generate_google_link(song_name)
 
 # Output the link
-print(f"Here is a Google search link to download the song: {google_link}")
+print(f"Here is a youtube search link to watch the song: {google_link}")
 playlist = {song_name : google_link }

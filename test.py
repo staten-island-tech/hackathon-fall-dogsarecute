@@ -2,6 +2,7 @@ import urllib.parse
 import webbrowser
 import tkinter as tk
 from tkinter import messagebox
+import random
 
 # Function to get Google search URL
 def generate_google_link(song_name):
@@ -36,6 +37,31 @@ def search_song():
     # Close the window after the search
     root.quit()  # or root.destroy()
 
+# Function to animate musical notes
+def animate_music_notes():
+    # Create 5 music notes at random starting positions
+    music_notes = []
+    for _ in range(5):
+        x_pos = random.randint(50, 350)
+        y_pos = random.randint(50, 300)
+        note = canvas.create_text(x_pos, y_pos, text="♪", font=("Arial", 24), fill="black")
+        music_notes.append(note)
+    
+    # Move each note vertically down and reset after it goes off-screen
+    def move_notes():
+        for note in music_notes:
+            canvas.move(note, 0, 5)
+            if canvas.coords(note)[1] > 400:  # If the note moves off screen
+                canvas.delete(note)
+                music_notes.remove(note)
+                x_pos = random.randint(50, 350)
+                y_pos = random.randint(50, 300)
+                new_note = canvas.create_text(x_pos, y_pos, text="♪", font=("Arial", 24), fill="black")
+                music_notes.append(new_note)
+        canvas.after(50, move_notes)  # Keep moving the notes
+    
+    move_notes()
+
 # Create the main window
 root = tk.Tk()
 root.title("Song Search")
@@ -59,6 +85,13 @@ search_button.pack(pady=10)
 
 result_label = tk.Label(root, text="", wraplength=400)
 result_label.pack(pady=5)
+
+# Create a canvas for drawing and animating musical notes
+canvas = tk.Canvas(root, width=400, height=400)
+canvas.pack()
+
+# Start animating music notes
+animate_music_notes()
 
 # Run the application
 root.mainloop()
