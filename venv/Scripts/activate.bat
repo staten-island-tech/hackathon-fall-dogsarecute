@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\victor.yaremenko24\Documents\GitHub\hackathon-fall-dogsarecute\venv
+set VIRTUAL_ENV=C:\Users\dennis.chen24\Documents\GitHub\classes-project-DennisChenq\hackathon-fall-dogsarecute\venv
 
 if not defined PROMPT set PROMPT=$P$G
 
