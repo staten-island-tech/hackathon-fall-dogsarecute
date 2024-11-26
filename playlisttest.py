@@ -14,7 +14,7 @@ def generate_youtube_link(song_name):
     query = urllib.parse.quote(song_name)
     return f"https://www.youtube.com/results?search_query={query}"
 
-# Function to show search results and allow the user to click a link
+# Function to show search results and open the link automatically
 def show_search_results():
     song_name = song_entry.get()
     search_choice = search_choice_var.get()
@@ -33,36 +33,41 @@ def show_search_results():
         return
 
     # Display the clickable link
-    result_label.config(text=f"Click the link to view the song:\n{search_link}")
+    result_label.config(text=f"Opening the link for: {song_name}...\n{search_link}")
     
-    # Enable the open link button to open the link in the browser
-    open_link_button.config(state='normal', command=lambda: open_link_in_browser(search_link))
-
-    # Enable the add to playlist button only after the link is clicked
-    add_to_playlist_button.config(state='disabled')  # Disabled initially
+    # Update the current link so it can be manually added later
     current_link.set(search_link)
+    
+    # Automatically open the link in the browser
+    open_link_in_browser(search_link)
 
 # Function to open the link in the browser
 def open_link_in_browser(link):
+    # Open the link in the browser
     webbrowser.open(link)
-    # Enable the "Add to Playlist" button after the link is opened
-    add_to_playlist_button.config(state='normal')
 
-# Function to add the clicked link to the playlist
+# Function to manually add the link to the playlist
 def add_to_playlist():
-    link = current_link.get()  # Get the current link to add to the playlist
+    link = current_link.get()  # Get the current link
     song_name = song_entry.get()
 
     if not song_name or not link:
-        messagebox.showerror("Input Error", "Please enter a song name and click a link first.")
+        messagebox.showerror("Input Error", "Please enter a song name and open the link first.")
         return
     
-    # Add song and its link to playlist
+    # Check for duplicate songs in the playlist
+    if any(song_name.lower() == existing_song[0].lower() for existing_song in playlist):
+        messagebox.showerror("Duplicate Error", "This song is already in the playlist.")
+        return
+
+    # Add the song and its link to the playlist
     playlist.append((song_name, link))
     update_playlist_display()
+
+    # Clear the song name entry field
+    song_entry.delete(0, tk.END)
     
     result_label.config(text="Link added to playlist!")
-    add_to_playlist_button.config(state='disabled')  # Disable the button after adding
 
 # Function to update the playlist display with links
 def update_playlist_display():
@@ -100,7 +105,9 @@ def play_playlist():
             # Simulate song duration (e.g., 3 minutes or 180 seconds)
             root.after(180000, open_next_link, index + 1)  # 180000ms = 3 minutes (180 seconds)
         else:
-            result_label.config(text="Playlist finished!")
+            # Once we reach the end of the playlist, restart from the beginning
+            result_label.config(text="Playlist finished! Restarting playlist...")
+            root.after(3000, open_next_link, 0)  # Wait 3 seconds before restarting the playlist
 
     open_next_link()
 
@@ -153,14 +160,6 @@ search_button.pack(pady=10)
 result_label = tk.Label(root, text="", wraplength=400)
 result_label.pack(pady=5)
 
-# Button to open the link in the browser
-open_link_button = tk.Button(root, text="Open Link", state='disabled')  # Disabled initially
-open_link_button.pack(pady=10)
-
-# Button to add the clicked link to the playlist
-add_to_playlist_button = tk.Button(root, text="Add to Playlist", state='disabled', command=add_to_playlist)  # Disabled initially
-add_to_playlist_button.pack(pady=10)
-
 # Playlist Section
 playlist = []  # List to hold the songs and their links in the playlist
 playlist_label = tk.Label(root, text="Current Playlist:")
@@ -175,6 +174,17 @@ remove_song_entry.pack(pady=5)
 
 remove_button = tk.Button(root, text="Remove Song", command=remove_song_from_playlist)
 remove_button.pack(pady=5)
+
+# Entry for user to paste the link manually
+link_entry_label = tk.Label(root, text="Enter song link to add to playlist:")
+link_entry_label.pack(pady=5)
+
+link_entry = tk.Entry(root, width=40)
+link_entry.pack(pady=5)
+
+# Button to manually add the link to the playlist
+add_button = tk.Button(root, text="Add Link to Playlist", command=lambda: add_link_to_playlist(link_entry.get()))
+add_button.pack(pady=10)
 
 # Button to clear the entire playlist
 clear_button = tk.Button(root, text="Clear Playlist", command=clear_playlist)
@@ -194,5 +204,28 @@ current_link = tk.StringVar()
 # Start animating music notes
 animate_music_notes()
 
-# Run the application https://chatgpt.com/ Help me create a playlist that take links py Custom Playlist correction open link and let the user click another link to add to playlist
+# Function to add a manually entered link to the playlist
+def add_link_to_playlist(link):
+    song_name = song_entry.get()  # Get the song name from the entry field
+
+    if not song_name or not link:
+        messagebox.showerror("Input Error", "Please enter both a song name and a link.")
+        return
+
+    # Check if the song is already in the playlist
+    if any(song_name.lower() == existing_song[0].lower() for existing_song in playlist):
+        messagebox.showerror("Duplicate Error", "This song is already in the playlist.")
+        return
+
+    # Add the song name and link to the playlist
+    playlist.append((song_name, link))
+    update_playlist_display()
+
+    # Clear the entry fields
+    song_entry.delete(0, tk.END)
+    link_entry.delete(0, tk.END)
+
+    result_label.config(text="Link added to playlist!")
+
+# Run the application
 root.mainloop()
